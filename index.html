@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Галерея</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+</head>
+<style>
+    #gallery {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(3, 30%);
+        grid-gap: 1%;
+        margin: 0 auto;
+        justify-content: center;
+        margin-top: 2%;
+        margin-bottom: 2%;
+        row-gap: 35px;
+    }
+    img {
+      width: 100%;
+      height: 100%;
+      background: #341b9b;
+    }
+    img:hover {opacity: 0.7;}
+</style>
+<body style="background-color: #0c0e1d;">
+    <div  class="text-warning p-3 bg-blue" >
+    <h1 style="text-align: center;">Галерея</h1>
+    <select id="selectNumber" style="background-color: #e2e2e2; margin-left: 10%; width: 80%; text-align: center;" class="form-select" >
+        <option selected>Выберите Альбом</option>
+    </select>
+    </div>
+    <div id="gallery">
+</div>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script>
+        //считываем json файл с альбомами
+        fetch('https://jsonplaceholder.typicode.com/albums')
+        .then((response) => {
+            return response.json();
+        })
+        .then((data) => {
+            //добавление альбомов в выпадающий список
+            var select = document.getElementById("selectNumber"); 
+            for(var i = 0; i < data.length; i++) {
+                var opt = data[i].title;
+                var el = document.createElement("option");
+                el.textContent = data[i].title;
+                el.value = data[i].id;
+                select.appendChild(el);
+                
+            }
+        });
+        //действие при выборе селекта
+        $('#selectNumber').on('input', function() {
+           let currentalbum= $('#selectNumber').val();
+            $("#gallery").html("");
+           showImage(currentalbum);
+            
+        });
+        //вывод картинок
+        function showImage(album){
+            let gallery=document.getElementById("gallery");
+            fetch('https://jsonplaceholder.typicode.com/photos?albumId='+album)
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                for (let i = 0; i < data.length; i++) {
+                    const image=document.createElement("img");
+                    const a=document.createElement('a');
+                    a.href=data[i].url;
+                    image.src=data[i].thumbnailUrl;
+                    image.className="rounded";
+                    a.append(image);
+                    gallery.append(a);
+                }
+            });
+        }
+        
+    </script>
+</body>
+</html>
